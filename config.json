@@ -1,0 +1,5 @@
+{
+    "sourceFile": "./Documentation_Addons.html",
+    "templateFile": "./schema-template.json",
+    "outputFile": "./schema.json"
+}

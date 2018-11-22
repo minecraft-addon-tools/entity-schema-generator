@@ -1,0 +1,308 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "https://minecraft-addon-tools.github.io/schemas/1.8.0/serverEntity.json",
+    "title": "Entity definition file",
+    "definitions": {
+        "components": {
+            "type": "object",
+            "properties": "$$components$$"
+        },
+        "event": {
+            "type": "object",
+            "properties": {
+                "filters": {
+                    "type": "object",
+                    "description": "Allows to specify conditions which deciede whether the action is performed.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/filter"
+                        }
+                    ]
+                },
+                "add": {
+                    "type": "object",
+                    "title": "Add component groups",
+                    "description": "An object whose component_groups property specifies what component groups to add when the event occurs.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/component_group_list"
+                        }
+                    ]
+                },
+                "remove": {
+                    "type": "object",
+                    "title": "Remove component groups",
+                    "description": "An object whose component_groups property specifies what component groups to remove when the event occurs.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/component_group_list"
+                        }
+                    ]
+                },
+                "randomize": {
+                    "type": "array",
+                    "description": "Allows to specify multiple actions of which one is chosen at random.",
+                    "items": {
+                        "allOf": [
+                            {
+                                "$ref": "#/definitions/event"
+                            },
+                            {
+                                "properties": {
+                                    "weight": {
+                                        "type": "integer",
+                                        "description": "Determines the probability of this action. The probability will be the weight divided by the sum of all weights.\nFor example, if you specify two actions, one with weight 1 and one with weight 2, the probability of the first action is 1/3 and the probability of the second one is 2/3.",
+                                        "default": 1
+                                    }
+                                },
+                                "required": [
+                                    "weight"
+                                ]
+                            }
+                        ]
+                    }
+                },
+                "sequence": {
+                    "type": "array",
+                    "description": "Allows to specify multiple actions which are all performed when the event occurs.",
+                    "items": {
+                        "$ref": "#/definitions/event"
+                    }
+                }
+            },
+            "propertyNames": {
+                "enum": [
+                    "filters",
+                    "add",
+                    "remove",
+                    "randomize",
+                    "sequence",
+                    "weight"
+                ]
+            }
+        },
+        "component_group_list": {
+            "type": "object",
+            "properties": {
+                "component_groups": {
+                    "description": "An array of names of component groups to add/remove.",
+                    "type": "array",
+                    "items": {
+                        "type": "string",
+                        "minecraftType": "componentGroupName"
+                    }
+                }
+            },
+            "additionalProperties": false
+        },
+        "filter": {
+            "type": "object",
+            "properties": {
+                "test": {
+                    "type": "string",
+                    "enum": "$$filterTestEnum$$",
+                    "enumDescriptions": "$$filterTestEnumDescriptions$$"
+                }
+            },
+            "oneOf": [
+                {
+                    "properties": {
+                        "test": {},
+                        "subject": {
+                            "type": "string",
+                            "enum": [
+                                "other",
+                                "parent",
+                                "player",
+                                "self",
+                                "target"
+                            ],
+                            "enumDescriptions": [
+                                "The other member of an interaction, not the caller.",
+                                "The caller's current parent.",
+                                "The player involved with the interaction.",
+                                "The entity or object calling the test",
+                                "The caller's current target."
+                            ],
+                            "default": "self"
+                        },
+                        "operator": {
+                            "type": "string",
+                            "enum": [
+                                "!=",
+                                "<",
+                                "<=",
+                                "<>",
+                                "=",
+                                "==",
+                                ">",
+                                ">=",
+                                "equals",
+                                "not"
+                            ],
+                            "default": "equals"
+                        },
+                        "value": {}
+                    },
+                    "required": [
+                        "test"
+                    ],
+                    "additionalProperties": false,
+                    "oneOf": "$$filters$$"
+                },
+                {
+                    "properties": {
+                        "all_of": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/filter"
+                            }
+                        },
+                        "any_of": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/filter"
+                            }
+                        }
+                    },
+                    "additionalProperties": false
+                }
+            ]
+        }
+    },
+    "type": "object",
+    "properties": {
+        "format_version": {
+            "title": "Format version",
+            "description": "Specifies the version of the game this entity was made in. If the version is lower than the current version, any changes made to the entity in the vanilla version will be applied to it.",
+            "type": "string",
+            "default": "1.8.0"
+        },
+        "do_not_upgrade": {
+            "description": "Disables all current and future backwards compatibility for this entity. If new components or properties are added or changed to the vanilla version of this entity, they will not be applied.",
+            "type": "object",
+            "default": {},
+            "additionalProperties": false
+        },
+        "minecraft:entity": {
+            "title": "Entity definition",
+            "description": "Defines entity's components, component groups and events",
+            "type": "object",
+            "properties": {
+                "description": {
+                    "title": "Entity description",
+                    "description": "Contains the identifier and some basic properties",
+                    "type": "object",
+                    "properties": {
+                        "identifier": {
+                            "type": "string",
+                            "description": "A string which identifies this entity. If an entity with this identifier exists, it is modified, otherwise a new entity is created."
+                        },
+                        "is_spawnable": {
+                            "description": "Sets whether or not this entity has a spawn egg in the creative ui.",
+                            "properties": {
+                                "value": {
+                                    "type": "boolean",
+                                    "default": true
+                                }
+                            },
+                            "required": [
+                                "value"
+                            ],
+                            "additionalProperties": false
+                        },
+                        "is_summonable": {
+                            "description": "Sets whether or not we can summon this entity using commands such as /summon.",
+                            "properties": {
+                                "value": {
+                                    "type": "boolean",
+                                    "default": true
+                                }
+                            },
+                            "required": [
+                                "value"
+                            ],
+                            "additionalProperties": false
+                        },
+                        "is_experimental": {
+                            "description": "Sets whether or not this entity is experimental. Experimental entities are only enabled when the experimental toggle is enabled.",
+                            "properties": {
+                                "value": {
+                                    "type": "boolean",
+                                    "default": false
+                                }
+                            },
+                            "required": [
+                                "value"
+                            ],
+                            "additionalProperties": false
+                        },
+                        "runtime_identifier": {
+                            "description": "Allows you to set what vanilla Minecraft entity's hard coded behaviors you want to use on your mob.",
+                            "properties": {
+                                "id": {
+                                    "type": "string"
+                                }
+                            },
+                            "required": [
+                                "id"
+                            ],
+                            "additionalProperties": false
+                        }
+                    },
+                    "required": [
+                        "identifier"
+                    ]
+                },
+                "component_groups": {
+                    "title": "Component groups",
+                    "description": "An object whose each property specifies a component group. The key is the name of the component group and the value is an object with the components belonging to that specific component group.",
+                    "examples": [
+                        {
+                            "component_group_1": {
+                                "minecraft:color": {
+                                    "value": 1
+                                }
+                            },
+                            "component_group_2": {
+                                "minecraft:color": {
+                                    "value": 2
+                                }
+                            }
+                        }
+                    ],
+                    "type": "object",
+                    "additionalProperties": {
+                        "$ref": "#/definitions/components"
+                    }
+                },
+                "components": {
+                    "type": "object",
+                    "title": "Components",
+                    "description": "An object with this entity's components that are not part of any component group. Each property specifies a component. The key is the name of the component and the value is usually an object with the properties of that component, or an empty object when there are no properties.\nNote: sometimes the value can also be an array, or even a boolean.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/components"
+                        }
+                    ]
+                },
+                "events": {
+                    "title": "Events",
+                    "description": "An object whose each property specifies an event. The key is the name of the event and the value is an object describing the action that happens when the event occurs.",
+                    "type": "object",
+                    "additionalProperties": {
+                        "$ref": "#/definitions/event"
+                    }
+                }
+            },
+            "required": [
+                "description",
+                "components"
+            ],
+            "additionalProperties": false
+        }
+    },
+    "required": [
+        "minecraft:entity"
+    ]
+}
