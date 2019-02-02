@@ -18,9 +18,7 @@ exports.extractComponents = (documentation, values) => {
 
         if (component.parameters) {
             obj.properties = {};
-            for (const parameter of component.parameters) {
-                obj.properties[parameter.name] = { description: parameter.description };
-            }
+            extractParameters(component.parameters, obj.properties);
         } else {
             obj.default = {};
         }
@@ -48,10 +46,30 @@ exports.extractComponents = (documentation, values) => {
         values.components[component.name] = obj;
 
         if (component.parameters) {
-            for (const parameter of component.parameters) {
-                obj.properties[parameter.name] = { description: parameter.description };
-            }
+            extractParameters(component.parameters, obj.properties);
         }
     }
 
 };
+
+function extractParameters(parameters, result) {
+    for (const parameter of parameters) {
+        const obj = { description: parameter.description };
+        result[parameter.name] = obj;
+        if (parameter.nestedParameters) {
+            const properties = {};
+            extractParameters(parameter.nestedParameters, properties);
+            const isTypeArray = parameter.type === "Array" || parameter.type === "List";
+            if (isTypeArray) {
+                obj.type = "array";
+                obj.items = {
+                    type: "object",
+                    properties
+                }
+            } else {
+                obj.type = "object";
+                obj.properties = properties;
+            }
+        }
+    }
+}
