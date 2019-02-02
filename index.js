@@ -7,7 +7,7 @@ const { sourceFile, templateFile, outputFile } = require("./config");
 
 (async () => {
 
-    const documentation = await MinecraftAddonDocumentation.fromFile(sourceFile);
+    const documentation = await MinecraftAddonDocumentation.fromFile(sourceFile, { sort: true });
 
     const values = {};
     extractFilters(documentation, values);
