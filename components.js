@@ -1,5 +1,11 @@
 exports.extractComponents = (documentation, values) => {
 
+    const arrayComponents = new Set([
+        "minecraft:damage_sensor",
+        "minecraft:interact",
+        "minecraft:spawn_entity"
+    ]);
+
     values.components = {};
 
     for (const component of [...documentation.properties, ...documentation.components]) {
@@ -17,6 +23,14 @@ exports.extractComponents = (documentation, values) => {
             }
         } else {
             obj.default = {};
+        }
+
+        if (arrayComponents.has(component.name)) {
+            obj.type = ["array", "object"];
+            obj.items = {
+                type: "object",
+                properties: obj.properties
+            };
         }
     }
 
