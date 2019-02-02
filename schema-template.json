@@ -1,6 +1,6 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
-    "$id": "https://minecraft-addon-tools.github.io/schemas/1.10.0/serverEntity.json",
+    "$id": "https://minecraft-addon-tools.github.io/schemas/$$version$$/serverEntity.json",
     "title": "Entity definition file",
     "definitions": {
         "components": {
@@ -176,7 +176,7 @@
             "title": "Format version",
             "description": "Specifies the version of the game this entity was made in. If the version is lower than the current version, any changes made to the entity in the vanilla version will be applied to it.",
             "type": "string",
-            "default": "1.10.0"
+            "default": "$$version$$"
         },
         "do_not_upgrade": {
             "description": "Disables all current and future backwards compatibility for this entity. If new components or properties are added or changed to the vanilla version of this entity, they will not be applied.",

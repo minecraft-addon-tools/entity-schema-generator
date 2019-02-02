@@ -10,6 +10,7 @@ const { sourceFile, templateFile, outputFile } = require("./config");
     const documentation = await MinecraftAddonDocumentation.fromFile(sourceFile, { sort: true });
 
     const values = {};
+    values.version = `${documentation.version.major}.${documentation.version.minor}.${documentation.version.revision}`;
     extractFilters(documentation, values);
     extractComponents(documentation, values);
     await template(templateFile, values, outputFile);
